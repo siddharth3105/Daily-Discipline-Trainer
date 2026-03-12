@@ -1,5 +1,5 @@
 # 🔥 Daily Discipline Trainer
-
+https://siddharth3105.github.io/Daily-Discipline-Trainer/
 Complete fitness companion app built with Flutter - workouts, AI food scanner, smartwatch sync, and progress tracking.
 
 ## ✨ Features
