@@ -1,0 +1,13 @@
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+*.iml
+*.log
+android/.gradle
+android/captures/
+android/local.properties
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
