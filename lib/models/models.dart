@@ -117,3 +117,34 @@ class CustomWorkout {
   Map<String, dynamic> toJson() => {'id':id,'name':name,'description':description,'exercises':exercises.map((e)=>e.toJson()).toList(),'createdAt':createdAt.toIso8601String()};
   factory CustomWorkout.fromJson(Map<String, dynamic> j) => CustomWorkout(id:j['id'],name:j['name'],description:j['description'],exercises:(j['exercises']as List).map((e)=>CustomExercise.fromJson(e)).toList(),createdAt:DateTime.parse(j['createdAt']));
 }
+
+class CustomMealItem {
+  final String name, time, foods;
+  final int calories;
+  final double protein, carbs, fat;
+  CustomMealItem({required this.name, required this.time, required this.foods, required this.calories, required this.protein, required this.carbs, required this.fat});
+  Map<String, dynamic> toJson() => {'name':name,'time':time,'foods':foods,'calories':calories,'protein':protein,'carbs':carbs,'fat':fat};
+  factory CustomMealItem.fromJson(Map<String, dynamic> j) => CustomMealItem(name:j['name'],time:j['time'],foods:j['foods'],calories:j['calories'],protein:(j['protein']as num).toDouble(),carbs:(j['carbs']as num).toDouble(),fat:(j['fat']as num).toDouble());
+}
+
+class CustomDietPlan {
+  final String id, name, description;
+  final int goalCalories;
+  final List<CustomMealItem> meals;
+  final DateTime createdAt;
+  CustomDietPlan({required this.id, required this.name, required this.description, required this.goalCalories, required this.meals, DateTime? createdAt}) : createdAt = createdAt ?? DateTime.now();
+  int get totalCalories => meals.fold(0,(a,m)=>a+m.calories);
+  Map<String, dynamic> toJson() => {'id':id,'name':name,'description':description,'goalCalories':goalCalories,'meals':meals.map((m)=>m.toJson()).toList(),'createdAt':createdAt.toIso8601String()};
+  factory CustomDietPlan.fromJson(Map<String, dynamic> j) => CustomDietPlan(id:j['id'],name:j['name'],description:j['description'],goalCalories:j['goalCalories'],meals:(j['meals']as List).map((m)=>CustomMealItem.fromJson(m)).toList(),createdAt:DateTime.parse(j['createdAt']));
+}
+
+class WeeklySchedule {
+  final String id, name;
+  final Map<int, String> workoutSchedule; // day index (0-6) -> workout id or category key
+  final String dietPlanId; // custom diet plan id or 'muscle'/'fatloss'/'height'
+  final bool isCustom;
+  final DateTime createdAt;
+  WeeklySchedule({required this.id, required this.name, required this.workoutSchedule, required this.dietPlanId, this.isCustom=true, DateTime? createdAt}) : createdAt = createdAt ?? DateTime.now();
+  Map<String, dynamic> toJson() => {'id':id,'name':name,'workoutSchedule':workoutSchedule.map((k,v)=>(MapEntry(k.toString(),v))),'dietPlanId':dietPlanId,'isCustom':isCustom,'createdAt':createdAt.toIso8601String()};
+  factory WeeklySchedule.fromJson(Map<String, dynamic> j) => WeeklySchedule(id:j['id'],name:j['name'],workoutSchedule:(j['workoutSchedule']as Map<String,dynamic>).map((k,v)=>MapEntry(int.parse(k),v as String)),dietPlanId:j['dietPlanId'],isCustom:j['isCustom']??true,createdAt:DateTime.parse(j['createdAt']));
+}

@@ -20,6 +20,9 @@ class AppProvider extends ChangeNotifier {
   ReminderSettings _reminders = const ReminderSettings();
   List<BodyStatEntry> _bodyStats = [];
   List<CustomWorkout> _customWorkouts = [];
+  List<CustomDietPlan> _customDietPlans = [];
+  List<WeeklySchedule> _weeklySchedules = [];
+  String? _activeScheduleId;
   HealthData _healthData = HealthData();
   bool _loaded = false;
   String? _newBadgeId;
@@ -44,6 +47,10 @@ class AppProvider extends ChangeNotifier {
   ReminderSettings get reminders   => _reminders;
   List<BodyStatEntry> get bodyStats => _bodyStats;
   List<CustomWorkout> get customWorkouts => _customWorkouts;
+  List<CustomDietPlan> get customDietPlans => _customDietPlans;
+  List<WeeklySchedule> get weeklySchedules => _weeklySchedules;
+  String? get activeScheduleId => _activeScheduleId;
+  WeeklySchedule? get activeSchedule => _activeScheduleId == null ? null : _weeklySchedules.firstWhere((s) => s.id == _activeScheduleId, orElse: () => _weeklySchedules.isEmpty ? WeeklySchedule(id: 'default', name: 'Auto', workoutSchedule: {}, dietPlanId: 'muscle', isCustom: false) : _weeklySchedules.first);
   HealthData get healthData        => _healthData;
   bool get loaded                  => _loaded;
   bool get healthAuthorized        => _healthAuthorized;
@@ -55,7 +62,14 @@ class AppProvider extends ChangeNotifier {
   }
 
   int get todayDayIndex => (DateTime.now().weekday + 6) % 7;
-  String get todayCat => weekSchedule[todayDayIndex];
+  String get todayCat {
+    if (_activeScheduleId != null && activeSchedule != null) {
+      final schedule = activeSchedule!;
+      final dayWorkout = schedule.workoutSchedule[todayDayIndex];
+      if (dayWorkout != null) return dayWorkout;
+    }
+    return weekSchedule[todayDayIndex];
+  }
 
   List<String> get weekDates {
     final today = DateTime.now();
@@ -84,6 +98,9 @@ class AppProvider extends ChangeNotifier {
     _reminders      = await _storage.loadReminders();
     _bodyStats      = await _storage.loadBodyStats();
     _customWorkouts = await _storage.loadCustomWorkouts();
+    _customDietPlans = await _storage.loadCustomDietPlans();
+    _weeklySchedules = await _storage.loadWeeklySchedules();
+    _activeScheduleId = await _storage.loadActiveScheduleId();
     _loaded = true;
     notifyListeners();
 
@@ -237,6 +254,42 @@ class AppProvider extends ChangeNotifier {
   Future<void> removeCustomWorkout(String id) async {
     _customWorkouts.removeWhere((w) => w.id == id);
     await _storage.saveCustomWorkouts(_customWorkouts);
+    notifyListeners();
+  }
+
+  // ── Custom diet plans
+  Future<void> addCustomDietPlan(CustomDietPlan plan) async {
+    _customDietPlans.add(plan);
+    await _storage.saveCustomDietPlans(_customDietPlans);
+    notifyListeners();
+  }
+
+  Future<void> removeCustomDietPlan(String id) async {
+    _customDietPlans.removeWhere((p) => p.id == id);
+    await _storage.saveCustomDietPlans(_customDietPlans);
+    notifyListeners();
+  }
+
+  // ── Weekly schedules
+  Future<void> addWeeklySchedule(WeeklySchedule schedule) async {
+    _weeklySchedules.add(schedule);
+    await _storage.saveWeeklySchedules(_weeklySchedules);
+    notifyListeners();
+  }
+
+  Future<void> removeWeeklySchedule(String id) async {
+    _weeklySchedules.removeWhere((s) => s.id == id);
+    if (_activeScheduleId == id) {
+      _activeScheduleId = null;
+      await _storage.saveActiveScheduleId(null);
+    }
+    await _storage.saveWeeklySchedules(_weeklySchedules);
+    notifyListeners();
+  }
+
+  Future<void> setActiveSchedule(String? id) async {
+    _activeScheduleId = id;
+    await _storage.saveActiveScheduleId(id);
     notifyListeners();
   }
 

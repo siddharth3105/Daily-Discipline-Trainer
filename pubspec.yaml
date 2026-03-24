@@ -13,6 +13,7 @@ dependencies:
   shared_preferences: ^2.2.2
   image_picker: ^1.0.7
   http: ^1.2.0
+  crypto: ^3.0.3
   confetti: ^0.7.0
   fl_chart: ^0.66.2
   intl: ^0.19.0

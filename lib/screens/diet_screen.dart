@@ -253,6 +253,7 @@ class _ScanTabState extends State<_ScanTab> {
   ScannedFood? _result;
   String _error = '';
   bool _added = false;
+  String _aiProvider = 'gemini'; // 'gemini' or 'claude'
 
   final _picker = ImagePicker();
 
@@ -274,6 +275,7 @@ class _ScanTabState extends State<_ScanTab> {
     if (_image == null) return;
     setState(() { _scanning = true; _error = ''; });
     try {
+      AiFoodService.setProvider(_aiProvider); // Set provider before scanning
       final result = await AiFoodService.analyzeFood(_image!);
       setState(() { _result = result; });
     } catch (e) {
@@ -331,6 +333,37 @@ class _ScanTabState extends State<_ScanTab> {
         ),
       ),
       const SizedBox(height: 12),
+
+      // AI Provider selector
+      if (_image == null)
+        DarkCard(child: Row(children: [
+          const Text('🤖', style: TextStyle(fontSize: 24)),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
+            Text('AI PROVIDER', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.textPrim)),
+            Text('Choose which AI analyzes your food', style: TextStyle(fontSize: 11, color: AppColors.textSub)),
+          ])),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.card2,
+              border: Border.all(color: AppColors.border),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: DropdownButton<String>(
+              value: _aiProvider,
+              underline: const SizedBox(),
+              dropdownColor: AppColors.card2,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.hiit),
+              items: const [
+                DropdownMenuItem(value: 'gemini', child: Text('Gemini (Free)')),
+                DropdownMenuItem(value: 'claude', child: Text('Claude (Premium)')),
+              ],
+              onChanged: (v) => setState(() => _aiProvider = v!),
+            ),
+          ),
+        ])),
+      if (_image == null) const SizedBox(height: 12),
 
       // Action buttons
       if (_image != null && _result == null)

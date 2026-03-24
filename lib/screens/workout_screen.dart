@@ -5,7 +5,7 @@ import '../data/app_data.dart';
 import '../models/models.dart';
 import '../theme/app_colors.dart';
 import '../widgets/shared_widgets.dart';
-import '../widgets/figure_animation.dart';
+import '../widgets/exercise_gif_widget.dart';
 
 class WorkoutScreen extends StatefulWidget {
   const WorkoutScreen({super.key});
@@ -275,7 +275,6 @@ class _ExerciseModal extends StatefulWidget {
 }
 
 class _ExerciseModalState extends State<_ExerciseModal> {
-  double _speed = 1.0;
   int _timer = 0;
   bool _running = false;
   String _tab = 'form';
@@ -333,31 +332,21 @@ class _ExerciseModalState extends State<_ExerciseModal> {
               borderRadius: BorderRadius.circular(16),
             ),
             child: Column(children: [
-              Text('PROPER FORM — ANIMATED GUIDE',
+              Text('PROPER FORM — REAL HUMAN DEMONSTRATION',
                 style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: AppColors.textDim, letterSpacing: 4)),
               const SizedBox(height: 14),
-              FigureAnimation(type: widget.ex.animationType, color: widget.catColor, speed: _speed),
+              // Use real human GIF from ExerciseDB
+              ExerciseGifWidget(
+                gifUrl: ExerciseGifMapping.getGifUrl(widget.name),
+                borderColor: widget.catColor,
+                height: 280,
+                fallbackText: widget.name,
+              ),
               const SizedBox(height: 12),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                ...[[0.5, '0.5×'], [1.0, '1×'], [2.0, '2×']].map((sp) {
-                  final s = sp[0] as double; final l = sp[1] as String;
-                  return GestureDetector(
-                    onTap: () => setState(() => _speed = s),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
-                      margin: const EdgeInsets.only(right: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: _speed == s ? widget.catColor.withOpacity(0.2) : AppColors.card2,
-                        border: Border.all(color: _speed == s ? widget.catColor : AppColors.border2),
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      child: Text(l, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 11, color: _speed == s ? widget.catColor : AppColors.textDim, letterSpacing: 1)),
-                    ),
-                  );
-                }),
-                const Text('SPEED', style: TextStyle(fontSize: 10, color: AppColors.textDim)),
-              ]),
+              const Text(
+                'Professional exercise demonstration',
+                style: TextStyle(fontSize: 10, color: AppColors.textDim, fontStyle: FontStyle.italic),
+              ),
             ]),
           ),
           const SizedBox(height: 14),

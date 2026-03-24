@@ -38,4 +38,13 @@ class StorageService {
 
   Future<List<CustomWorkout>> loadCustomWorkouts() async { final p=await SharedPreferences.getInstance(); final j=p.getString('ddt_custom_workouts'); if(j==null) return []; return (jsonDecode(j)as List).map((e)=>CustomWorkout.fromJson(e)).toList(); }
   Future<void> saveCustomWorkouts(List<CustomWorkout> w) async { final p=await SharedPreferences.getInstance(); await p.setString('ddt_custom_workouts',jsonEncode(w.map((x)=>x.toJson()).toList())); }
+
+  Future<List<CustomDietPlan>> loadCustomDietPlans() async { final p=await SharedPreferences.getInstance(); final j=p.getString('ddt_custom_diet_plans'); if(j==null) return []; return (jsonDecode(j)as List).map((e)=>CustomDietPlan.fromJson(e)).toList(); }
+  Future<void> saveCustomDietPlans(List<CustomDietPlan> plans) async { final p=await SharedPreferences.getInstance(); await p.setString('ddt_custom_diet_plans',jsonEncode(plans.map((x)=>x.toJson()).toList())); }
+
+  Future<List<WeeklySchedule>> loadWeeklySchedules() async { final p=await SharedPreferences.getInstance(); final j=p.getString('ddt_weekly_schedules'); if(j==null) return []; return (jsonDecode(j)as List).map((e)=>WeeklySchedule.fromJson(e)).toList(); }
+  Future<void> saveWeeklySchedules(List<WeeklySchedule> schedules) async { final p=await SharedPreferences.getInstance(); await p.setString('ddt_weekly_schedules',jsonEncode(schedules.map((x)=>x.toJson()).toList())); }
+
+  Future<String?> loadActiveScheduleId() async { final p=await SharedPreferences.getInstance(); return p.getString('ddt_active_schedule_id'); }
+  Future<void> saveActiveScheduleId(String? id) async { final p=await SharedPreferences.getInstance(); if(id==null) await p.remove('ddt_active_schedule_id'); else await p.setString('ddt_active_schedule_id',id); }
 }

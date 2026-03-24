@@ -3,8 +3,14 @@ import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 import '../models/models.dart';
 import '../services/notification_service.dart';
+import '../services/quotes_api_service.dart';
+import '../services/weather_api_service.dart';
 import '../theme/app_colors.dart';
 import '../widgets/shared_widgets.dart';
+import 'plan_manager_screen.dart';
+import 'exercise_browser_screen.dart';
+import 'nutrition_search_screen.dart';
+import 'ai_coach_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,6 +26,125 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final h = prov.healthData;
 
     return ListView(padding: const EdgeInsets.fromLTRB(14, 8, 14, 90), children: [
+      // ── Custom Plans
+      _SectionTitle('📅  CUSTOM PLANS'),
+      GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PlanManagerScreen())),
+        child: DarkCard(child: Row(children: [
+          Container(
+            width: 48, height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.hiit.withOpacity(0.2),
+              border: Border.all(color: AppColors.hiit.withOpacity(0.5)),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(child: Text('💪', style: TextStyle(fontSize: 24))),
+          ),
+          const SizedBox(width: 14),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
+            Text('MY CUSTOM PLANS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.textPrim)),
+            Text('Create workout & diet plans', style: TextStyle(fontSize: 12, color: AppColors.textSub)),
+          ])),
+          const Icon(Icons.arrow_forward_ios, size: 18, color: AppColors.textDim),
+        ])),
+      ),
+      const SizedBox(height: 16),
+
+      // ── API Features
+      _SectionTitle('🌐  API FEATURES'),
+      GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AiCoachScreen())),
+        child: DarkCard(child: Row(children: [
+          Container(
+            width: 48, height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.hiit.withOpacity(0.2),
+              border: Border.all(color: AppColors.hiit.withOpacity(0.5)),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(child: Text('🤖', style: TextStyle(fontSize: 24))),
+          ),
+          const SizedBox(width: 14),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
+            Text('AI FITNESS COACH', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.textPrim)),
+            Text('Groq & Gemini AI powered', style: TextStyle(fontSize: 12, color: AppColors.textSub)),
+          ])),
+          const Icon(Icons.arrow_forward_ios, size: 18, color: AppColors.textDim),
+        ])),
+      ),
+      const SizedBox(height: 8),
+      GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ExerciseBrowserScreen())),
+        child: DarkCard(child: Row(children: [
+          Container(
+            width: 48, height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.bodyweight.withOpacity(0.2),
+              border: Border.all(color: AppColors.bodyweight.withOpacity(0.5)),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(child: Text('🏋️', style: TextStyle(fontSize: 24))),
+          ),
+          const SizedBox(width: 14),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
+            Text('EXERCISE LIBRARY', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.textPrim)),
+            Text('1300+ exercises with instructions', style: TextStyle(fontSize: 12, color: AppColors.textSub)),
+          ])),
+          const Icon(Icons.arrow_forward_ios, size: 18, color: AppColors.textDim),
+        ])),
+      ),
+      const SizedBox(height: 8),
+      GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NutritionSearchScreen())),
+        child: DarkCard(child: Row(children: [
+          Container(
+            width: 48, height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.flex.withOpacity(0.2),
+              border: Border.all(color: AppColors.flex.withOpacity(0.5)),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Center(child: Text('🍎', style: TextStyle(fontSize: 24))),
+          ),
+          const SizedBox(width: 14),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
+            Text('NUTRITION DATABASE', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.textPrim)),
+            Text('Search 800k+ foods', style: TextStyle(fontSize: 12, color: AppColors.textSub)),
+          ])),
+          const Icon(Icons.arrow_forward_ios, size: 18, color: AppColors.textDim),
+        ])),
+      ),
+      const SizedBox(height: 8),
+      FutureBuilder<QuoteData>(
+        future: QuotesApiService.getQuoteOfDay(),
+        builder: (context, snapshot) {
+          final quote = snapshot.data;
+          return DarkCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: const [
+              Text('💭', style: TextStyle(fontSize: 24)),
+              SizedBox(width: 12),
+              Text('QUOTE OF THE DAY', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppColors.textPrim)),
+            ]),
+            if (quote != null) ...[
+              const SizedBox(height: 12),
+              Text('"${quote.quote}"', style: const TextStyle(fontSize: 14, color: AppColors.textSub, fontStyle: FontStyle.italic, height: 1.5)),
+              const SizedBox(height: 6),
+              Text('— ${quote.author}', style: const TextStyle(fontSize: 12, color: AppColors.textDim)),
+            ] else if (snapshot.hasError)
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text('Failed to load quote', style: TextStyle(fontSize: 12, color: AppColors.textDim)),
+              )
+            else
+              const Padding(
+                padding: EdgeInsets.only(top: 12),
+                child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.hiit))),
+              ),
+          ]));
+        },
+      ),
+      const SizedBox(height: 16),
+
       // ── Profile section
       _SectionTitle('👤  MY PROFILE'),
       DarkCard(child: Column(children: [

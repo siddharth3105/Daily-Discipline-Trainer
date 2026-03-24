@@ -1,0 +1,123 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Build APK
+      run: flutter build apk --release
+      
+    - name: Build App Bundle
+      run: flutter build appbundle --release
+      
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: android-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+        
+    - name: Upload App Bundle
+      uses: actions/upload-artifact@v3
+      with:
+        name: android-bundle
+        path: build/app/outputs/bundle/release/app-release.aab
+
+  build-web:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+        
+    - name: Get dependencies
+      run: flutter pub get
+      
+    - name: Build web
+      run: flutter build web --release
+      
+    - name: Archive web build
+      run: |
+        cd build/web
+        zip -r ../../web-release.zip .
+        cd ../..
+        
+    - name: Upload web build
+      uses: actions/upload-artifact@v3
+      with:
+        name: web-release
+        path: web-release.zip
+
+  create-release:
+    needs: [build-android, build-web]
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          android-apk/app-release.apk
+          android-bundle/app-release.aab
+          web-release/web-release.zip
+        body: |
+          ## Daily Discipline Trainer Release
+          
+          ### What's New
+          - AI Fitness Coach with Groq & Gemini
+          - AI Food Scanner
+          - 1300+ Exercise Library
+          - 800k+ Nutrition Database
+          - Custom Plans System
+          - Real Human Exercise GIFs
+          
+          ### Downloads
+          - **Android APK**: For direct installation
+          - **Android Bundle**: For Play Store
+          - **Web**: Extract and host anywhere
+          
+          ### Features
+          ✅ AI-powered coaching
+          ✅ Food photo scanning
+          ✅ Exercise library
+          ✅ Nutrition database
+          ✅ Custom plans
+          ✅ Health sync
+          
+          **Cost**: $0/month
+          **Value**: $60-100/month
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
