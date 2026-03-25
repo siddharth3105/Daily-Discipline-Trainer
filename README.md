@@ -2,14 +2,14 @@
 
 > AI-Powered Fitness & Nutrition Tracking App - Built with Flutter
 
-[![Deploy Web](https://github.com/YOUR_USERNAME/daily-discipline-trainer/actions/workflows/deploy-web.yml/badge.svg)](https://github.com/YOUR_USERNAME/daily-discipline-trainer/actions/workflows/deploy-web.yml)
-[![Build Release](https://github.com/YOUR_USERNAME/daily-discipline-trainer/actions/workflows/build-release.yml/badge.svg)](https://github.com/YOUR_USERNAME/daily-discipline-trainer/actions/workflows/build-release.yml)
+[![Deploy Web](https://github.com/siddharth3105/Daily-Discipline-Trainer/actions/workflows/deploy-web.yml/badge.svg)](https://github.com/siddharth3105/Daily-Discipline-Trainer/actions/workflows/deploy-web.yml)
+[![Build Release](https://github.com/siddharth3105/Daily-Discipline-Trainer/actions/workflows/build-release.yml/badge.svg)](https://github.com/siddharth3105/Daily-Discipline-Trainer/actions/workflows/build-release.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-3.24.0-blue.svg)](https://flutter.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 A complete fitness tracking app with AI-powered coaching, 1300+ exercises, 800k+ food database, and smart health integration - all powered by free APIs!
 
-[🌐 Live Demo](https://YOUR_USERNAME.github.io/daily-discipline-trainer/) | [📱 Download APK](https://github.com/YOUR_USERNAME/daily-discipline-trainer/releases) | [📚 Documentation](./ALL_APIS_COMPLETE.md)
+[🌐 Live Demo](https://siddharth3105.github.io/Daily-Discipline-Trainer/) | [📱 Download APK](https://github.com/siddharth3105/Daily-Discipline-Trainer/releases) | [📚 Documentation](./ALL_APIS_COMPLETE.md)
 
 ---
 
