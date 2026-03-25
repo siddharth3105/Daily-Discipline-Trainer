@@ -164,37 +164,47 @@ If no food detected, return {"error": "No food detected"}.''';
       },
     };
 
-    final response = await http.post(
-      Uri.parse('$_geminiUrl/models/gemini-1.5-flash:generateContent?key=$_geminiApiKey'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(requestBody),
-    ).timeout(const Duration(seconds: 30));
+    try {
+      final response = await http.post(
+        Uri.parse('$_geminiUrl/models/gemini-1.5-flash-latest:generateContent?key=$_geminiApiKey'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      ).timeout(const Duration(seconds: 30));
 
-    if (response.statusCode != 200) {
-      // Provide detailed error information
-      String errorMsg = 'Gemini API error: ${response.statusCode}';
-      try {
-        final errorData = jsonDecode(response.body);
-        if (errorData['error'] != null) {
-          errorMsg += ' - ${errorData['error']['message'] ?? errorData['error']}';
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['candidates'] == null || data['candidates'].isEmpty) {
+          throw Exception('No response from Gemini AI');
         }
-      } catch (_) {
-        errorMsg += ' - ${response.body}';
+        final text = data['candidates'][0]['content']['parts'][0]['text'];
+
+        // Clean and parse JSON
+        final clean = text.replaceAll('```json', '').replaceAll('```', '').trim();
+        final parsed = jsonDecode(clean) as Map<String, dynamic>;
+
+        if (parsed.containsKey('error')) {
+          throw Exception(parsed['error']);
+        }
+
+        return ScannedFood.fromJson(parsed);
+      } else {
+        // Provide detailed error information
+        String errorMsg = 'Gemini API error ${response.statusCode}';
+        try {
+          final errorData = jsonDecode(response.body);
+          if (errorData['error'] != null) {
+            errorMsg = errorData['error']['message'] ?? errorMsg;
+          }
+        } catch (_) {
+          // If can't parse error, use status code
+        }
+        throw Exception(errorMsg);
       }
-      throw Exception(errorMsg);
+    } catch (e) {
+      if (e.toString().contains('TimeoutException')) {
+        throw Exception('Request timeout. Please try again.');
+      }
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
-
-    final data = jsonDecode(response.body);
-    final text = data['candidates'][0]['content']['parts'][0]['text'];
-
-    // Clean and parse JSON
-    final clean = text.replaceAll('```json', '').replaceAll('```', '').trim();
-    final parsed = jsonDecode(clean) as Map<String, dynamic>;
-
-    if (parsed.containsKey('error')) {
-      throw Exception(parsed['error']);
-    }
-
-    return ScannedFood.fromJson(parsed);
   }
 }
