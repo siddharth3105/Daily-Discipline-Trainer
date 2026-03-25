@@ -214,7 +214,7 @@ class _ExerciseCard extends StatelessWidget {
               const SizedBox(height: 12),
               const Text('INSTRUCTIONS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textDim, letterSpacing: 3)),
               const SizedBox(height: 6),
-              ...exercise.instructions.take(3).asMap().entries.map((e) => Padding(
+              ...exercise.instructions.take(3).toList().asMap().entries.map((e) => Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text('${e.key + 1}. ${e.value}', style: const TextStyle(fontSize: 12, color: AppColors.textSub, height: 1.5)),
               )),

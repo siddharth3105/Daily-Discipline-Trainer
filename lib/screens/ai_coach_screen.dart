@@ -230,14 +230,19 @@ class _WorkoutGeneratorTabState extends State<_WorkoutGeneratorTab> {
   Future<void> _generate() async {
     setState(() { _loading = true; _result = null; });
     try {
-      final result = widget.aiProvider == 'groq'
-          ? await GroqAiService.generateWorkoutPlan(goal: _goal, fitnessLevel: _level, equipment: 'Full Gym', daysPerWeek: _days)
-          : await GeminiAiService.generateWorkoutPlan(goal: _goal, level: _level, daysPerWeek: _days);
-      
-      setState(() {
-        _result = widget.aiProvider == 'groq' ? result.description : result;
-        _loading = false;
-      });
+      if (widget.aiProvider == 'groq') {
+        final result = await GroqAiService.generateWorkoutPlan(goal: _goal, fitnessLevel: _level, equipment: 'Full Gym', daysPerWeek: _days);
+        setState(() {
+          _result = result.description;
+          _loading = false;
+        });
+      } else {
+        final result = await GeminiAiService.generateWorkoutPlan(goal: _goal, level: _level, daysPerWeek: _days);
+        setState(() {
+          _result = result;
+          _loading = false;
+        });
+      }
     } catch (e) {
       setState(() {
         _result = 'Error: ${e.toString().replaceAll('Exception: ', '')}';
@@ -329,14 +334,19 @@ class _DietGeneratorTabState extends State<_DietGeneratorTab> {
   Future<void> _generate() async {
     setState(() { _loading = true; _result = null; });
     try {
-      final result = widget.aiProvider == 'groq'
-          ? await GroqAiService.generateDietPlan(goal: _goal, targetCalories: _calories, dietaryRestrictions: _restrictions, mealsPerDay: 5)
-          : await GeminiAiService.generateDietPlan(goal: _goal, calories: _calories, restrictions: _restrictions);
-      
-      setState(() {
-        _result = widget.aiProvider == 'groq' ? result.description : result;
-        _loading = false;
-      });
+      if (widget.aiProvider == 'groq') {
+        final result = await GroqAiService.generateDietPlan(goal: _goal, targetCalories: _calories, dietaryRestrictions: _restrictions, mealsPerDay: 5);
+        setState(() {
+          _result = result.description;
+          _loading = false;
+        });
+      } else {
+        final result = await GeminiAiService.generateDietPlan(goal: _goal, calories: _calories, restrictions: _restrictions);
+        setState(() {
+          _result = result;
+          _loading = false;
+        });
+      }
     } catch (e) {
       setState(() {
         _result = 'Error: ${e.toString().replaceAll('Exception: ', '')}';
