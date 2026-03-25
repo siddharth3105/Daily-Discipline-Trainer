@@ -118,11 +118,11 @@ Estimate based on typical serving size visible. If no food is detected, return {
     final bytes = await imageFile.readAsBytes();
     final base64Image = base64Encode(bytes);
     
-    // Detect media type
-    final ext = imageFile.path.split('.').last.toLowerCase();
-    final mimeType = ext == 'png' ? 'image/png' : 
-                     ext == 'gif' ? 'image/gif' :
-                     ext == 'webp' ? 'image/webp' : 'image/jpeg';
+    // Detect media type from file name
+    final fileName = imageFile.name.toLowerCase();
+    final mimeType = fileName.endsWith('.png') ? 'image/png' : 
+                     fileName.endsWith('.gif') ? 'image/gif' :
+                     fileName.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
 
     final prompt = '''Analyze this food image and return ONLY a valid JSON object with these exact fields:
 {
@@ -171,7 +171,17 @@ If no food detected, return {"error": "No food detected"}.''';
     ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode != 200) {
-      throw Exception('Gemini API error: ${response.statusCode}');
+      // Provide detailed error information
+      String errorMsg = 'Gemini API error: ${response.statusCode}';
+      try {
+        final errorData = jsonDecode(response.body);
+        if (errorData['error'] != null) {
+          errorMsg += ' - ${errorData['error']['message'] ?? errorData['error']}';
+        }
+      } catch (_) {
+        errorMsg += ' - ${response.body}';
+      }
+      throw Exception(errorMsg);
     }
 
     final data = jsonDecode(response.body);
