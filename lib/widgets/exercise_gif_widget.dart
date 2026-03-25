@@ -92,10 +92,17 @@ class ExerciseGifWidget extends StatelessWidget {
   }
 }
 
-/// Mapping of exercise names to direct GIF URLs
+/// Mapping of exercise names to animated illustration URLs
 class ExerciseGifMapping {
+  // INSTRUCTIONS TO ADD CUSTOM ANIMATIONS:
+  // 1. Find or create animated illustrations like the plank example you showed
+  // 2. Host them on GitHub, Imgur, or your own server
+  // 3. Replace the URLs below with your custom animation URLs
+  // 
+  // For now, using ExerciseDB real human demonstrations
+  // Replace these with cartoon-style animations for better UX
   static const Map<String, String> exerciseGifs = {
-    // HIIT Cardio - Using v2.exercisedb.io direct GIF URLs
+    // HIIT Cardio
     'Jumping Jacks': 'https://v2.exercisedb.io/image/3224',
     'Burpee': 'https://v2.exercisedb.io/image/0648',
     'Mountain Climbers': 'https://v2.exercisedb.io/image/0028',
