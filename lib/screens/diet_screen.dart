@@ -1,5 +1,6 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
@@ -248,7 +249,7 @@ class _ScanTab extends StatefulWidget {
 }
 
 class _ScanTabState extends State<_ScanTab> {
-  File? _image;
+  XFile? _image;
   bool _scanning = false;
   ScannedFood? _result;
   String _error = '';
@@ -268,7 +269,7 @@ class _ScanTabState extends State<_ScanTab> {
   Future<void> _pickImage(ImageSource source) async {
     final picked = await _picker.pickImage(source: source, imageQuality: 80, maxWidth: 1024);
     if (picked == null) return;
-    setState(() { _image = File(picked.path); _result = null; _error = ''; _added = false; });
+    setState(() { _image = picked; _result = null; _error = ''; _added = false; });
   }
 
   Future<void> _scanFood() async {
@@ -322,7 +323,20 @@ class _ScanTabState extends State<_ScanTab> {
             borderRadius: BorderRadius.circular(16),
           ),
           child: _image != null
-              ? ClipRRect(borderRadius: BorderRadius.circular(14), child: Image.file(_image!, fit: BoxFit.cover))
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: kIsWeb
+                      ? Image.network(_image!.path, fit: BoxFit.cover)
+                      : FutureBuilder<Uint8List>(
+                          future: _image!.readAsBytes(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Image.memory(snapshot.data!, fit: BoxFit.cover);
+                            }
+                            return const Center(child: CircularProgressIndicator());
+                          },
+                        ),
+                )
               : Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                   const Text('📸', style: TextStyle(fontSize: 48)),
                   const SizedBox(height: 8),

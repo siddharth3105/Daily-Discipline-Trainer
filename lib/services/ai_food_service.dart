@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import '../models/models.dart';
 
 class AiFoodService {
@@ -22,13 +22,13 @@ class AiFoodService {
   /// Get current provider
   static String getProvider() => _provider;
 
-  static Future<ScannedFood> analyzeFood(File imageFile) async {
+  static Future<ScannedFood> analyzeFood(XFile imageFile) async {
     return _provider == 'gemini' 
         ? _analyzeWithGemini(imageFile)
         : _analyzeWithClaude(imageFile);
   }
 
-  static Future<ScannedFood> _analyzeWithClaude(File imageFile) async {
+  static Future<ScannedFood> _analyzeWithClaude(XFile imageFile) async {
     // Read image and encode to base64
     final bytes = await imageFile.readAsBytes();
     final base64Image = base64Encode(bytes);
@@ -113,7 +113,7 @@ Estimate based on typical serving size visible. If no food is detected, return {
     return ScannedFood.fromJson(parsed);
   }
 
-  static Future<ScannedFood> _analyzeWithGemini(File imageFile) async {
+  static Future<ScannedFood> _analyzeWithGemini(XFile imageFile) async {
     // Read image and encode to base64
     final bytes = await imageFile.readAsBytes();
     final base64Image = base64Encode(bytes);
