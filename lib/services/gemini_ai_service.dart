@@ -163,12 +163,27 @@ List them as:
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final text = data['candidates'][0]['content']['parts'][0]['text'];
-        return text;
+        if (data['candidates'] != null && data['candidates'].isNotEmpty) {
+          final text = data['candidates'][0]['content']['parts'][0]['text'];
+          return text;
+        }
+        throw Exception('No response from Gemini AI');
+      } else if (response.statusCode == 400) {
+        final error = jsonDecode(response.body);
+        throw Exception('Gemini API error: ${error['error']?['message'] ?? 'Bad request'}');
+      } else if (response.statusCode == 403) {
+        throw Exception('Gemini API key invalid or restricted. Please check your API key settings.');
+      } else if (response.statusCode == 429) {
+        throw Exception('Gemini API rate limit exceeded. Please try again in a minute.');
       }
-      throw Exception('Failed to generate content: ${response.statusCode}');
+      throw Exception('Gemini API error (${response.statusCode}): ${response.body}');
+    } on http.ClientException catch (e) {
+      throw Exception('Network error: Unable to connect to Gemini API. Check your internet connection.');
     } catch (e) {
-      throw Exception('Error generating content: $e');
+      if (e.toString().contains('TimeoutException')) {
+        throw Exception('Request timeout: Gemini API took too long to respond. Please try again.');
+      }
+      throw Exception('Gemini AI error: ${e.toString().replaceAll('Exception: ', '')}');
     }
   }
 

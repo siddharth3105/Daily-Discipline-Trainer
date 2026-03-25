@@ -337,10 +337,9 @@ class _ExerciseModalState extends State<_ExerciseModal> {
               const SizedBox(height: 14),
               // Use real human GIF from ExerciseDB
               ExerciseGifWidget(
-                gifUrl: ExerciseGifMapping.getGifUrl(widget.name),
+                exerciseName: widget.name,
                 borderColor: widget.catColor,
                 height: 280,
-                fallbackText: widget.name,
               ),
               const SizedBox(height: 12),
               const Text(
