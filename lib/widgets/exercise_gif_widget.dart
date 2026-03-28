@@ -92,15 +92,18 @@ class ExerciseGifWidget extends StatelessWidget {
   }
 }
 
-/// Mapping of exercise names to animated illustration URLs
+/// Mapping of exercise names to animated GIF URLs
 class ExerciseGifMapping {
-  // INSTRUCTIONS TO ADD CUSTOM ANIMATIONS:
-  // 1. Find or create animated illustrations like the plank example you showed
-  // 2. Host them on GitHub, Imgur, or your own server
-  // 3. Replace the URLs below with your custom animation URLs
+  // Currently using ExerciseDB (real human demonstrations)
   // 
-  // For now, using ExerciseDB real human demonstrations
-  // Replace these with cartoon-style animations for better UX
+  // TO GET FREE CARTOON ANIMATIONS:
+  // 1. Go to: https://www.flaticon.com/animated-icons/fitness (FREE with attribution)
+  // 2. Download GIFs for each exercise
+  // 3. Upload to: https://imgur.com (FREE hosting)
+  // 4. Replace URLs below with your Imgur links
+  // 
+  // OR use Giphy: https://giphy.com/search/exercise (FREE to embed)
+  //
   static const Map<String, String> exerciseGifs = {
     // HIIT Cardio
     'Jumping Jacks': 'https://v2.exercisedb.io/image/3224',
